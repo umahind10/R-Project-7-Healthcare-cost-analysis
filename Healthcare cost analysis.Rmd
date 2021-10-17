@@ -1,0 +1,90 @@
+---
+title: "Project-Healthcare Cost Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Project
+
+
+
+```{r}
+#importing data sets
+library(readxl)
+library(plyr)
+library(rmarkdown)
+hosp<-read_excel("C:\\Users\\HP\\Desktop\\R Projects\\7 Healthcare cost analysis\\hospitalcosts.xlsx")
+head(hosp)
+
+summary(hosp)
+
+attach(hosp)
+#1 insight
+hist(AGE)
+
+#to see the value of category of infants
+ag<-as.factor(AGE)
+summary(ag)
+
+#age category of 0 seems to be  frequently using the hospital
+
+tapply(TOTCHG,AGE,sum)
+
+which.max(tapply(TOTCHG,AGE,sum))
+
+#max expenditure also by infant of 0 age =678118, 15=111747 17=174777
+
+#2insight
+diagg<-as.factor(APRDRG)
+summary(diagg)
+
+which.max(summary(diagg))
+
+tapply(TOTCHG,diagg,sum)
+
+which.max(tapply(TOTCHG,diagg,sum))
+
+max(tapply(TOTCHG,diagg,sum))
+
+#From the results we can see that the category 640 has the maximum entries of hospitalization
+#and also has the highest total hospitalization cost (437978).   
+
+#h0:The race of the patient is related to the hospitalization costs. 
+#ha:no relation
+
+rc<-as.factor(RACE)
+summary(rc)
+
+#now to omit na values from data set
+hospna<-na.omit(hosp)
+
+modelannova<-aov(TOTCHG~RACE)
+options(scipen = 999)
+summary(modelannova)
+
+#p-value comes out to be very high 68% this means we can take risk and reject the null hypothesis
+#this means  there is no relation between the race of patient and the hospital cost. 
+
+modelm1<-lm(TOTCHG~AGE+FEMALE)
+summary(modelm1)
+
+#p-value for age is very less this means it is a  important factor in the hospital costs as seen by the significance levels and p-values
+#gender has also less p value means it is also having the impact on cost and same with intercept
+
+modelm2<-lm(LOS~AGE+FEMALE+RACE)
+summary(modelm2)
+
+#except for the intercept.
+#The very high p-value signifies that there is no linear relationship between the given variables.
+#That is, with just the age, gender, and race, it is not possible to predict the los of a patient
+
+modelm3<-lm(TOTCHG~ .,data=hospna) 
+summary(modelm3)
+
+#APRDRG also affect
+#We can see that age and length of stay affect the total hospital cost.
+```
+
